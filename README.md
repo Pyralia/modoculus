@@ -1,82 +1,126 @@
-## Example app using MongoDB
+# MODOCULUS Doc
 
-[MongoDB](https://www.mongodb.com/) is a general purpose, document-based, distributed database built for modern application developers and for the cloud era. This example will show you how to connect to and use MongoDB as your backend for your Next.js app.
+///
 
-If you want to learn more about MongoDB, visit the following pages:
+# MongoDB Schema Documentation (SUMMARY)
 
-- [MongoDB Atlas](https://mongodb.com/atlas)
-- [MongoDB Documentation](https://docs.mongodb.com/)
+## playerProfiles
 
-## Deploy your own
+| Field          | Type      | Description                                  |
+| -------------- | --------- | -------------------------------------------- |
+| _id            | String    | UUID of the player in .toString() format     |
+| username       | String    | Username of the player                       |
+| rank           | String    | Rank of the player                           |
+| credits        | NumberInt | Credits of the player                        |
+| discordId      | String    | Discord ID of the player, null if not linked |
+| firstConnexion | String    | First connection date                        |
+| lastConnexion  | String    | Last connection date                         |
+| playTime       | NumberInt | Playtime in seconds                          |
 
-Once you have access to the environment variables you'll need, deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+## playerSubscriber
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?project-name=with-mongodb&repository-name=with-mongodb&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-mongodb&integration-ids=oac_jnzmjqM10gllKmSrG0SGrHOH)
+| Field                       | Type       | Description                                         |
+| --------------------------- | ---------- | --------------------------------------------------- |
+| _id                         | String     | UUID of the player in .toString() format            |
+| subscriber.currentStage     | NumberInt  | Number of subscription months                       |
+| subscriber.finishSubscriber | NumberLong | Timestamp when the subscription ends                |
+| subscriber.prefix           | String     | Custom suffix (to be renamed from prefix to suffix) |
+| subscriber.nextReward       | NumberLong | Timestamp for the next reward                       |
 
-## How to use
+## gameHistory
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
+| Field       | Type      | Description                                           |
+| ----------- | --------- | ----------------------------------------------------- |
+| _id         | String    | UUID of the game in .toString() format                |
+| duration    | String    | Game duration formatted as "MM:ss"                    |
+| date        | String    | Game date formatted as "dd/MM/yyyy MM:ss"             |
+| winners     | [String]  | List of winner usernames                              |
+| mumble      | Boolean   | Whether the game was on our mumble server             |
+| private     | Boolean   | Whether the game was private (true) or public (false) |
+| playerCount | NumberInt | Number of players at game start                       |
+| host        | String    | Host's username                                       |
+| scenarios   | [String]  | List of scenario names for the game                   |
+| gamemode    | String    | Name of the game mode                                 |
+| topKills    | [String]  | List of top 9 kills in the game                       |
 
-```bash
-npx create-next-app --example with-mongodb with-mongodb-app
+## playersGameHistory
+
+| Field    | Type      | Description                                                    |
+| -------- | --------- | -------------------------------------------------------------- |
+| _id      | String    | Combination of player UUID and game UUID in .toString() format |
+| gameId   | String    | UUID of the game in .toString() format                         |
+| playerId | String    | UUID of the player in .toString() format                       |
+| kills    | NumberInt | Number of kills by the player                                  |
+| diamonds | NumberInt | Number of diamonds mined by the player                         |
+| golds    | NumberInt | Number of golds mined by the player                            |
+| role     | String    | Role of the player ("Aucun" if none)                           |
+| team     | String    | Team of the player ("Aucune" if none)                          |
+| state    | String    | State of the player ("Vivant" if alive)                        |
+| win      | Boolean   | Whether the player won the game (true) or not (false)          |
+
+# MongoDB Schema Documentation (DETAILED)
+
+This document outlines the MongoDB schema for our application, including the collections: `playerProfiles`, `playerSubscriber`, `gameHistory`, and `playersGameHistory`.
+
+## Collection: playerProfiles
+
+```json
+{
+  "_id": "String",          // UUID of the player in .toString() format
+  "username": "String",     // Username of the player
+  "rank": "String",         // Rank of the player
+  "credits": "NumberInt",   // Credits of the player
+  "discordId": "String",    // Discord ID of the player, null if Discord is not linked
+  "firstConnexion": "String", // First connection date as a string
+  "lastConnexion": "String", // Last connection date as a string
+  "playTime": "NumberInt"   // Playtime in seconds
+}
 ```
 
-```bash
-yarn create next-app --example with-mongodb with-mongodb-app
+## Collection: playerSubscriber
+
+```json
+{
+  "_id": "String",                        // UUID of the player in .toString() format
+  "subscriber": {
+    "currentStage": "NumberInt",          // Number of subscription months
+    "finishSubscriber": "NumberLong",     // Timestamp when the subscription ends
+    "prefix": "String",                   // Custom suffix (to be renamed from prefix to suffix)
+    "nextReward": "NumberLong"            // Timestamp for the next reward
+  }
+}
 ```
 
-```bash
-pnpm create next-app --example with-mongodb with-mongodb-app
+## Collection: gameHistory
+
+```json
+{
+  "_id": "String",                  // UUID of the game in .toString() format
+  "duration": "String",             // Game duration formatted as "MM:ss"
+  "date": "String",                 // Game date formatted as "dd/MM/yyyy MM:ss"
+  "winners": ["String"],            // List of winner usernames
+  "mumble": "Boolean",              // Whether the game was on our mumble server
+  "private": "Boolean",             // Whether the game was private (true) or public (false)
+  "playerCount": "NumberInt",       // Number of players at game start
+  "host": "String",                 // Host's username
+  "scenarios": ["String"],          // List of scenario names for the game
+  "gamemode": "String",             // Name of the game mode
+  "topKills": ["String"]            // List of top 9 kills in the game
+}
 ```
 
-## Configuration
+## Collection: playersGameHistory
 
-### Set up a MongoDB database
-
-Set up a MongoDB database either locally or with [MongoDB Atlas for free](https://mongodb.com/atlas).
-
-### Set up environment variables
-
-Copy the `env.local.example` file in this directory to `.env.local` (which will be ignored by Git):
-
-```bash
-cp .env.local.example .env.local
-```
-
-Set each variable on `.env.local`:
-
-- `MONGODB_URI` - Your MongoDB connection string. If you are using [MongoDB Atlas](https://mongodb.com/atlas) you can find this by clicking the "Connect" button for your cluster.
-
-### Run Next.js in development mode
-
-```bash
-npm install
-npm run dev
-
-# or
-
-yarn install
-yarn dev
-```
-
-Your app should be up and running on [http://localhost:3000](http://localhost:3000)! If it doesn't work, post on [GitHub discussions](https://github.com/vercel/next.js/discussions).
-
-You will either see a message stating "You are connected to MongoDB" or "You are NOT connected to MongoDB". Ensure that you have provided the correct `MONGODB_URI` environment variable.
-
-When you are successfully connected, you can refer to the [MongoDB Node.js Driver docs](https://mongodb.github.io/node-mongodb-native/3.4/tutorials/collections/) for further instructions on how to query your database.
-
-## Deploy on Vercel
-
-You can deploy this app to the cloud with [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
-
-#### Deploy Your Local Project
-
-To deploy your local project to Vercel, push it to GitHub/GitLab/Bitbucket and [import to Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example).
-
-**Important**: When you import your project on Vercel, make sure to click on **Environment Variables** and set them to match your `.env.local` file.
-
-#### Deploy from Our Template
-
-Alternatively, you can deploy using our template by clicking on the Deploy button below.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?project-name=with-mongodb&repository-name=with-mongodb&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-mongodb&integration-ids=oac_jnzmjqM10gllKmSrG0SGrHOH)
+```json
+{
+  "_id": "String",                // Combination of player UUID and game UUID in .toString() format
+  "gameId": "String",             // UUID of the game in .toString() format
+  "playerId": "String",           // UUID of the player in .toString() format
+  "kills": "NumberInt",           // Number of kills by the player
+  "diamonds": "NumberInt",        // Number of diamonds mined by the player
+  "golds": "NumberInt",           // Number of golds mined by the player
+  "role": "String",               // Role of the player ("Aucun" if none)
+  "team": "String",               // Team of the player ("Aucune" if none)
+  "state": "String",              // State of the player ("Vivant" if alive)
+  "win": "Boolean"                // Whether the player won the game (true) or not (false)
+}
